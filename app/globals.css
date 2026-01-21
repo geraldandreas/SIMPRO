@@ -14,10 +14,48 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
+.sidebar-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.sidebar-icon img,
+.sidebar-icon svg {
+  width: 26px;
+  height: 26px;
+  transition: 0.2s ease;
+}
+
+/* HOVER → background putih + icon hitam */
+.sidebar-icon:hover {
+  background: white;
+}
+
+.sidebar-icon:hover img,
+.sidebar-icon:hover svg {
+  filter: invert(0) brightness(0); /* convert to black */
+}
+
+/* ACTIVE STATE → sama seperti hover */
+.sidebar-icon.active {
+  background: white;
+}
+
+.sidebar-icon.active img,
+.sidebar-icon.active svg {
+  filter: invert(0) brightness(0);
+}
+
+
 
 body {
   background: var(--background);
