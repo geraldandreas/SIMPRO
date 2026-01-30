@@ -23,6 +23,7 @@ interface SessionFeedback {
 
 
 interface SessionDetail {
+  drafts: any []; // session_drafts
   id: string;
   sesi_ke: number;
   tanggal: string;

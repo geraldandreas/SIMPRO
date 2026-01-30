@@ -6,8 +6,6 @@ import { supabase } from "@/lib/supabaseClient";
 import {
   CloudUpload,
   FileText,
-  CheckCircle2,
-  Search,
   Bell,
   Trash2,
   Info,
@@ -50,25 +48,27 @@ export default function PerbaikanPascaSeminar() {
         .from("proposals")
         .select("id")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
+
+        if (!proposal) return;
 
       const { data: seminar } = await supabase
         .from("seminar_requests")
         .select("id")
-        .eq("proposal_id", proposal.id)
+        .eq("proposal_id", proposal?.id)
         .eq("tipe", "seminar")
-        .single();
+        .maybeSingle();
 
       const { data: revisionData } = await supabase
         .from("seminar_revisions")
         .select("*")
-        .eq("seminar_request_id", seminar.id)
+        .eq("seminar_request_id", seminar?.id)
         .maybeSingle();
 
       const { data: sidangData } = await supabase
         .from("sidang_requests")
         .select("*")
-        .eq("proposal_id", proposal.id)
+        .eq("proposal_id", proposal?.id)
         .maybeSingle();
 
       setRevision(revisionData ?? null);
@@ -91,16 +91,16 @@ export default function PerbaikanPascaSeminar() {
         .from("proposals")
         .select("id")
         .eq("user_id", session.user.id)
-        .single();
+        .maybeSingle();
 
       const { data: seminar } = await supabase
         .from("seminar_requests")
         .select("id")
-        .eq("proposal_id", proposal.id)
+        .eq("proposal_id", proposal?.id)
         .eq("tipe", "seminar")
-        .single();
+        .maybeSingle();
 
-      const filePath = `${seminar.id}/${Date.now()}-${file.name}`;
+      const filePath = `${seminar?.id}/${Date.now()}-${file.name}`;
 
       const { error: storageError } = await supabase.storage
         .from("seminar_perbaikan")
@@ -112,7 +112,7 @@ export default function PerbaikanPascaSeminar() {
         .from("seminar_revisions")
         .upsert(
           {
-            seminar_request_id: seminar.id,
+            seminar_request_id: seminar?.id,
             file_path: filePath,
             original_name: file.name,
           },
@@ -155,12 +155,12 @@ export default function PerbaikanPascaSeminar() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
-      const { data: proposal } = await supabase.from("proposals").select("id").eq("user_id", session.user.id).single();
-      const { data: seminar } = await supabase.from("seminar_requests").select("id").eq("proposal_id", proposal.id).eq("tipe", "seminar").single();
+      const { data: proposal } = await supabase.from("proposals").select("id").eq("user_id", session.user.id).maybeSingle();
+      const { data: seminar } = await supabase.from("seminar_requests").select("id").eq("proposal_id", proposal?.id).eq("tipe", "seminar").maybeSingle();
 
       const { error } = await supabase.from("sidang_requests").insert({
-        proposal_id: proposal.id,
-        seminar_request_id: seminar.id,
+        proposal_id: proposal?.id,
+        seminar_request_id: seminar?.id,
         seminar_revision_id: revision.id,
         status: "menunggu_penjadwalan",
       });

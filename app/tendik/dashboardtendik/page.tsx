@@ -37,6 +37,12 @@ interface StudentTask {
   lecturer: string;
 }
 
+interface VerificationRowProps {
+  item: VerificationItem;
+  isActive: boolean;
+  onToggle: () => void;
+}
+
 interface VerificationItem {
   id: string;
   nama_dokumen: string;
@@ -45,8 +51,8 @@ interface VerificationItem {
   proposal: {
     user: {
       nama: string;
-    } | null;
-  } | null;
+    }[];
+  }[] ;
 }
 
 const DOC_LABEL: Record<string, string> = {
@@ -288,7 +294,7 @@ function VerificationRow({ item, isActive, onToggle }: VerificationRowProps) {
         
         <div className="col-span-3">
           <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mb-0.5">Mahasiswa</p>
-          <p className="font-black text-slate-800 text-sm">{item.proposal?.user?.nama || "-"}</p>
+          <p className="font-black text-slate-800 text-sm">{item.proposal[0]?.user[0]?.nama || "-"}</p>
         </div>
 
         <div className="col-span-5">

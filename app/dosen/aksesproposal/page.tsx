@@ -54,7 +54,15 @@ export default function AksesProposalPage() {
 
       if (error) throw error;
 
-      setProposals((data ?? []) as ProposalItem[]);
+      const mappedData: ProposalItem[] = (data ?? []).map((item: any) => ({
+      id: item.id,
+      judul: item.judul,
+      bidang: item.bidang,
+      status: item.status,
+      user: item.user[0] ?? null // 🔑 KUNCI UTAMA
+    }));
+
+    setProposals(mappedData);
     } catch (err) {
       console.error("❌ Gagal mengambil proposal:", err);
     } finally {

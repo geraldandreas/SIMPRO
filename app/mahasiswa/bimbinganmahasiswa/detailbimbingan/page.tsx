@@ -33,7 +33,6 @@ export default function DetailBimbinganPage() {
   const [catatanInput, setCatatanInput] = useState("");
   const [sending, setSending] = useState(false);
   const [feedbacks, setFeedbacks] = useState<any[]>([]);
-  const [sessionDrafts, setDrafts] = useState<any[]>([]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -55,14 +54,13 @@ export default function DetailBimbinganPage() {
         const { data: supervisors } = await supabase
           .from("thesis_supervisors")
           .select(`role, dosen:profiles ( nama )`)
-          .eq("proposal_id", sessionData.proposal.id);
+          .eq("proposal_id", sessionData.proposal[0].id);
 
         const { data: sessionDrafts } = await supabase
           .from("session_drafts")
           .select(`id, file_url, uploaded_at, mahasiswa_id, catatan`)
           .eq("session_id", sessionId)
           .order("uploaded_at", { ascending: false });
-        setDrafts(sessionDrafts);
 
         const { data: feedbackData, error: feedbackError } = await supabase
           .from("session_feedbacks")

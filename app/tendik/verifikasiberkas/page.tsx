@@ -26,8 +26,8 @@ interface VerificationItem {
   proposal: {
     user: {
       nama: string;
-    } | null;
-  } | null;
+    }[];
+  }[];
 }
 
 // ================= HELPER =================
@@ -320,7 +320,7 @@ export default function VerifikasiBerkasPage() {
                   {documents.map((item) => (
                     <tr key={item.id} className="hover:bg-gray-50">
                       <td className="px-8 py-6 font-semibold text-gray-800">
-                        {item.proposal?.user?.nama || "-"}
+                        {item.proposal[0]?.user[0]?.nama || "-"}
                       </td>
 
                       <td className="px-8 py-6 text-gray-700">

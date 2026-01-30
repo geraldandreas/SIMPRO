@@ -25,7 +25,7 @@ interface ProposalItem {
   user: {
     nama: string | null;
     npm: string | null;
-  } | null;
+  }[];
 }
 
 export default function AksesProposalPage() {
@@ -60,8 +60,8 @@ export default function AksesProposalPage() {
   const filteredProposals = proposals.filter((item) => {
     const matchSearch =
       item.judul.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.user?.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.user?.npm?.toLowerCase().includes(searchQuery.toLowerCase());
+      item.user[0]?.nama?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.user[0]?.npm?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchBidang = filterBidang === "Semua" || item.bidang === filterBidang;
     const matchStatus =
       filterStatus === "Semua" ||
@@ -213,11 +213,11 @@ export default function AksesProposalPage() {
                         <td className="py-8 px-8">
                           <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black group-hover:bg-blue-600 group-hover:text-white transition-all shrink-0 uppercase">
-                              {item.user?.nama?.charAt(0) || "?"}
+                              {item.user[0]?.nama?.charAt(0) || "?"}
                             </div>
                             <div className="min-w-0">
-                                <p className="text-sm font-black text-slate-800 leading-none truncate uppercase tracking-tight">{item.user?.nama ?? "-"}</p>
-                                <p className="text-[10px] text-slate-400 font-black mt-1.5 tracking-tighter">{item.user?.npm ?? "-"}</p>
+                                <p className="text-sm font-black text-slate-800 leading-none truncate uppercase tracking-tight">{item.user[0]?.nama ?? "-"}</p>
+                                <p className="text-[10px] text-slate-400 font-black mt-1.5 tracking-tighter">{item.user[0]?.npm ?? "-"}</p>
                             </div>
                           </div>
                         </td>

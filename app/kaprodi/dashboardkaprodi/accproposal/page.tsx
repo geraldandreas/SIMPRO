@@ -22,7 +22,7 @@ interface ProposalDetail {
   user: {
     nama: string | null;
     npm: string | null;
-  } | null;
+  }[];
 }
 
 // ---------------- PAGE ----------------
@@ -202,10 +202,10 @@ export default function AccProposalKaprodi() {
               </div>
               <div>
                 <h2 className="text-xl font-bold text-gray-900">
-                  {proposal.user?.nama || "Tanpa Nama"}
+                  {proposal.user[0]?.nama || "Tanpa Nama"}
                 </h2>
                 <p className="text-gray-500 font-medium mt-1">
-                  {proposal.user?.npm || "-"}
+                  {proposal.user[0]?.npm || "-"}
                 </p>
               </div>
             </div>

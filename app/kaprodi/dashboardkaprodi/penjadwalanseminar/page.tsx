@@ -54,10 +54,10 @@ export default function PenetapanJadwalPage() {
         if (reqError) throw reqError;
         setStudentData(requestData);
 
-        if (requestData?.proposal?.file_path) {
+        if (requestData?.proposal[0]?.file_path) {
           const { data: signed } = await supabase.storage
             .from('proposals')
-            .createSignedUrl(requestData.proposal.file_path, 3600);
+            .createSignedUrl(requestData.proposal[0]?.file_path, 3600);
           setFileUrl(signed?.signedUrl ?? null);
         }
 

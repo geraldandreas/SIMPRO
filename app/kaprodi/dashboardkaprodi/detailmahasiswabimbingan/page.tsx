@@ -89,8 +89,8 @@ if (!user) throw new Error("User belum login");
 
       setStudent({
         proposal_id: propData.id,
-        nama: propData.user?.nama || "Tanpa Nama",
-        npm: propData.user?.npm || "-",
+        nama: propData.user[0]?.nama || "Tanpa Nama",
+        npm: propData.user[0]?.npm || "-",
         judul: propData.judul,
         status: propData.status,
         pembimbing1: p1,

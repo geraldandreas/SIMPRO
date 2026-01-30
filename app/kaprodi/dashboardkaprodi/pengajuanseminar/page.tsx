@@ -14,8 +14,8 @@ interface SeminarRequest {
     user: {
       nama: string;
       npm: string;
-    };
-  };
+    }[];
+  }[];
 }
 
 export default function PengajuanSeminarPage() {
@@ -45,7 +45,7 @@ export default function PengajuanSeminarPage() {
           .order('created_at', { ascending: false });
 
         if (error) throw error;
-        setStudents(data || []);
+        setStudents(data);
 
       } catch (err) {
         console.error("Error fetching requests:", err);
@@ -141,11 +141,11 @@ export default function PengajuanSeminarPage() {
                       <td className="px-8 py-8">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400 font-black group-hover:bg-blue-600 group-hover:text-white transition-all shrink-0 uppercase">
-                            {item.proposal?.user?.nama?.charAt(0) || "?"}
+                            {item.proposal[0]?.user[0]?.nama?.charAt(0) || "?"}
                           </div>
                           <div className="min-w-0">
                               <p className="text-sm font-black text-slate-800 leading-none truncate uppercase tracking-tight">
-                                {item.proposal?.user?.nama || "-"}
+                                {item.proposal[0]?.user[0]?.nama || "-"}
                               </p>
                               <div className="flex items-center gap-1.5 mt-1.5 text-blue-500 font-bold text-[10px] uppercase tracking-widest">
                                 <User size={10} /> Mahasiswa Aktif
@@ -157,21 +157,21 @@ export default function PengajuanSeminarPage() {
                       {/* NPM */}
                       <td className="px-8 py-8 text-center">
                         <span className="text-xs font-bold text-slate-400 tracking-tighter tabular-nums">
-                          {item.proposal?.user?.npm || "-"}
+                          {item.proposal[0]?.user[0]?.npm || "-"}
                         </span>
                       </td>
 
                       {/* JUDUL */}
                       <td className="px-8 py-8">
                         <p className="text-[13px] font-bold text-slate-600 leading-relaxed italic line-clamp-2 pr-6">
-                          "{item.proposal?.judul || "-"}"
+                          "{item.proposal[0]?.judul || "-"}"
                         </p>
                       </td>
 
                       {/* BIDANG */}
                       <td className="px-8 py-8 text-center">
                         <span className="inline-block px-3 py-1 bg-slate-100 text-slate-500 text-[10px] font-black uppercase tracking-wider rounded-lg border border-slate-200">
-                          {item.proposal?.bidang || "-"}
+                          {item.proposal[0]?.bidang || "-"}
                         </span>
                       </td>
 

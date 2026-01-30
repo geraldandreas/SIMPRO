@@ -44,6 +44,11 @@ interface SessionDetail {
   dosen: {
     nama: string;
   };
+  drafts: {
+      id: string;
+      file_url: string;
+      uploaded_at: string;
+  }[];
 }
 
 export default function SesiBimbinganPage() {
@@ -358,7 +363,7 @@ if (feedbackError) throw feedbackError;
 
   if (loading) return <div className="flex h-screen items-center justify-center text-gray-400">Memuat sesi...</div>;
   if (!session) return <div className="flex h-screen items-center justify-center text-gray-400">Sesi tidak ditemukan.</div>;
-  const draft = session.drafts?.[0] ?? null;
+  const draft = session.drafts[0] ?? null;
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FB] font-sans text-slate-700">

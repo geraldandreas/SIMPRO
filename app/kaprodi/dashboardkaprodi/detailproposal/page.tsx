@@ -26,7 +26,7 @@ interface ProposalDetail {
   user: {
     nama: string | null;
     npm: string | null;
-  } | null;
+  }[];
 }
 
 interface Dosen {
@@ -182,9 +182,9 @@ export default function DetailProposalKaprodi() {
                   <User size={56} className="text-slate-300" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase leading-none">{proposal.user?.nama ?? "Tanpa Nama"}</h2>
+                  <h2 className="text-2xl font-black text-slate-800 tracking-tight uppercase leading-none">{proposal.user[0]?.nama ?? "Tanpa Nama"}</h2>
                   <p className="text-blue-600 font-black tracking-[0.15em] text-xs mt-3 bg-blue-50 px-4 py-1.5 rounded-full border border-blue-100 w-fit">
-                    {proposal.user?.npm ?? "-"}
+                    {proposal.user[0]?.npm ?? "-"}
                   </p>
                 </div>
               </div>

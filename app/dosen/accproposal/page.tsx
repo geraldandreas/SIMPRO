@@ -62,8 +62,17 @@ export default function DetailProposalKaprodi() {
     if (error) {
       console.error("Fetch proposal error:", error);
       alert("Gagal memuat data proposal");
-    } else {
-      setProposal(data);
+    } else if (data){
+      setProposal({
+        id: data.id,
+        judul: data.judul,
+        file_path: data.file_path,
+        status: data.status,
+        user: {
+          nama: data.user[0]?.nama,
+          npm: data.user[0]?.npm
+        }
+      });
     }
 
     setLoading(false);

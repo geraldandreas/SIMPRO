@@ -96,8 +96,8 @@ export default function DetailProgresTendikPage() {
         id: propData.id,
         judul: propData.judul,
         user: {
-          nama: propData.user?.nama || "-",
-          npm: propData.user?.npm || "-"
+          nama: propData.user[0]?.nama || "-",
+          npm: propData.user[0]?.npm || "-"
         }
       });
 

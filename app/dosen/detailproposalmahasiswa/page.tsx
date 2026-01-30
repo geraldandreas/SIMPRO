@@ -65,7 +65,15 @@ export default function DetailProposalMahasiswa() {
 
       if (error) throw error;
       
-      setProposal(data);
+      if (data) {
+      setProposal({
+        id: data.id,
+        judul: data.judul,
+        file_path: data.file_path,
+        status: data.status,
+        user: data.user[0] ?? null // 🔑 KUNCI UTAMA
+      });
+    }
 
     } catch (error: any) {
       console.error("Fetch proposal error:", error.message);
