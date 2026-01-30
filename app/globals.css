@@ -5,7 +5,12 @@
   --foreground: #171717;
 }
 
-@theme inline {
+/* Use a data-attribute selector instead of the non-standard `@theme` at-rule.
+   If you use next-themes or a similar library that sets `data-theme="inline"` on
+   <html> or another element, this selector will apply the variables correctly.
+   If your theme switcher uses a different hook (class or data attribute), update
+   the selector accordingly (for example: `.theme-inline { ... }`). */
+[data-theme="inline"] {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
