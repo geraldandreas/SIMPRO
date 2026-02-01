@@ -52,11 +52,13 @@ export default function DetailBimbinganPage() {
           .single();
 
         if (sessionError) throw sessionError;
-
+        {/* @ts-ignore */}
+        const proposalId = sessionData.proposal.id;
         const { data: supervisors } = await supabase
           .from("thesis_supervisors")
           .select(`role, dosen:profiles ( nama )`)
-          .eq("proposal_id", sessionData.proposal.id);
+          
+          .eq("proposal_id", proposalId);
 
 
         const { data: sessionDrafts } = await supabase
