@@ -1,0 +1,176 @@
+"use client";
+
+import Link from "next/link";
+import Image from "next/image"; 
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import useSWR, { mutate } from "swr"; 
+import { supabase } from "@/lib/supabaseClient";
+import {
+  LayoutDashboard,
+  FileUp,
+  MessageSquare,
+  FileText,
+  Calendar,
+  Edit3,
+  Settings,
+  LogOut,
+  Award,
+  FileCheck 
+} from "lucide-react";
+
+const fetchProfile = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not logged in");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("nama, role, avatar_url")
+    .eq("id", user.id)
+    .single();
+
+  return {
+    nama: profile?.nama || user.user_metadata?.full_name || user.email || "User",
+    role: profile?.role || "Mahasiswa",
+    avatar_url: profile?.avatar_url || null,
+  };
+};
+
+export default function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const { data } = useSWR('sidebar_user_profile', fetchProfile, {
+    revalidateOnFocus: false,
+  });
+
+  const displayName = data?.nama || "Loading...";
+  const role = data?.role || "Mahasiswa";
+  const avatarUrl = data?.avatar_url || null;
+
+  const menuItems = [
+    { icon: LayoutDashboard, label: "Dashboard", href: "/mahasiswa/dashboard" },
+    { icon: FileUp, label: "Unggah Proposal", href: "/mahasiswa/uploadproposal" },
+    { icon: MessageSquare, label: "Bimbingan", href: "/mahasiswa/bimbinganmahasiswa" },
+    { icon: FileText, label: "Unggah Dokumen Seminar", href: "/mahasiswa/uploaddokumen" },
+    { icon: Calendar, label: "Jadwal Seminar & Sidang", href: "/mahasiswa/jadwal" },
+    { icon: Edit3, label: "Perbaikan Pasca Seminar", href: "/mahasiswa/perbaikan" },
+    { icon: FileCheck, label: "Dokumen Sidang", href: "/mahasiswa/dokumensidang" }, 
+    { icon: Award, label: "Nilai & Hasil Sidang", href: "/mahasiswa/nilaisidang" },
+  ];
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("profile-changes")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles" },
+        () => {
+          mutate('sidebar_user_profile'); 
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`)
+      ? "bg-blue-50 text-blue-700 font-semibold"
+      : "text-gray-400 hover:bg-gray-50";
+
+  return (
+    <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-30">
+      
+      <div className="p-6 pb-2">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-full bg-[#2B5F9E] flex items-center justify-center text-white font-bold text-lg relative overflow-hidden shrink-0 shadow-inner">
+            {avatarUrl ? (
+              <Image 
+                src={avatarUrl} 
+                alt="Profile" 
+                layout="fill" 
+                objectFit="cover" 
+              />
+            ) : (
+              displayName.charAt(0).toUpperCase()
+            )}
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-sm font-bold text-gray-900 truncate">
+              {displayName}
+            </h3>
+            <p className="text-xs text-blue-600 font-medium capitalize">
+              {role}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-2">
+          MENU
+        </p>
+
+        {menuItems.map((item) => (
+          <Link key={item.href} href={item.href}>
+            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${isActive(item.href)}`}>
+              <item.icon size={18} className="shrink-0" />
+              <span className="leading-tight">{item.label}</span>
+            </div>
+          </Link>
+        ))}
+
+        <div className="pt-8">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-2">
+            OTHERS
+          </p>
+
+          <Link href="/settings">
+            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${isActive("/settings")}`}>
+              <Settings size={18} className="shrink-0" />
+              <span>Settings</span>
+            </div>
+          </Link>
+        </div>
+      </nav>
+
+      <div className="p-6 mt-auto bg-white">
+        <button
+          onClick={handleLogout}
+          className="
+            w-full flex items-center gap-3 px-4 py-3
+            rounded-xl text-gray-500 font-medium
+            hover:bg-red-50 hover:text-red-600
+            transition-all group
+          "
+        >
+          <div
+            className="
+              w-9 h-9 flex items-center justify-center
+              rounded-lg border border-gray-200
+              text-gray-400
+              group-hover:border-red-200
+              group-hover:text-red-600
+              transition-all shrink-0
+            "
+          >
+            <LogOut size={18} className="rotate-180" />
+          </div>
+
+          <span className="text-sm">Log out</span>
+        </button>
+
+        <p className="text-xs text-gray-400 mt-3 ml-12">V.1.0.0</p>
+      </div>
+
+    </aside>
+  );
+}

@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@theme {
+  --animate-marquee: marquee 25s linear infinite;
+
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-100%); }
+  }
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+/* Use a data-attribute selector instead of the non-standard `@theme` at-rule.
+   If you use next-themes or a similar library that sets `data-theme="inline"` on
+   <html> or another element, this selector will apply the variables correctly.
+   If your theme switcher uses a different hook (class or data attribute), update
+   the selector accordingly (for example: `.theme-inline { ... }`). */
+[data-theme="inline"] {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #000000;
+  }
+}
+
+.sidebar-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s ease;
+}
+
+.sidebar-icon img,
+.sidebar-icon svg {
+  width: 26px;
+  height: 26px;
+  transition: 0.2s ease;
+}
+
+.sidebar-icon:hover {
+  background: white;
+}
+
+.sidebar-icon:hover img,
+.sidebar-icon:hover svg {
+  filter: invert(0) brightness(0); 
+}
+
+.sidebar-icon.active {
+  background: white;
+}
+
+.sidebar-icon.active img,
+.sidebar-icon.active svg {
+  filter: invert(0) brightness(0);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}

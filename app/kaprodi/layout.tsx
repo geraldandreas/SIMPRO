@@ -1,0 +1,100 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import SidebarKaprodi from "@/components/sidebar-kaprodi";
+import NotificationBell from "@/components/notificationBell";
+import { supabase } from "@/lib/supabaseClient";
+
+export default function KaprodiLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const router = useRouter();
+  const [allowed, setAllowed] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const checkRole = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace("/login");
+        return;
+      }
+
+      const { data: profile, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (error || !profile) {
+        router.replace("/login");
+        return;
+      }
+
+      if (profile.role !== "kaprodi") {
+        switch (profile.role) {
+          case "mahasiswa":
+            router.replace("/mahasiswa/dashboard");
+            break;
+
+          case "dosen":
+            router.replace("/dosen/dashboarddosen");
+            break;
+
+          case "tendik":
+            router.replace("/tendik/dashboardtendik");
+            break;
+
+          default:
+            router.replace("/login");
+        }
+
+        return;
+      }
+
+      setAllowed(true);
+      setChecking(false);
+    };
+
+    checkRole();
+  }, [router]);
+
+  if (checking) {
+    return (
+      <div className="p-8 text-slate-500 font-medium">
+        Memeriksa akses...
+      </div>
+    );
+  }
+
+  if (!allowed) {
+    return null;
+  }
+  return (
+    <div className="flex min-h-screen bg-[#F8F9FB] font-sans text-slate-700">
+      <SidebarKaprodi />
+      
+      <main className="flex-1 ml-64 flex flex-col min-w-0">
+        <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-end px-10 sticky top-0 z-20 shrink-0 w-full">
+          <div className="flex items-center gap-5">
+            <NotificationBell />
+            <div className="h-6 w-[1px] bg-slate-200" />
+            <span className="text-sm font-black tracking-[0.4em] text-blue-600 uppercase mt-0.5">
+              SIMPRO
+            </span>
+          </div>
+        </header>
+
+        <div className="flex-1 overflow-y-auto">
+          {children}
+        </div>
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,144 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import Image from "next/image"; 
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
+import {
+  LayoutDashboard,
+  FileText,
+  Settings,
+  LogOut,
+  Users,
+} from "lucide-react";
+
+const MENU_ITEMS = [
+  { label: "Dashboard", icon: LayoutDashboard, href: "/tendik/dashboardtendik" },
+  { label: "Manajemen Akun", icon: Users, href: "/tendik/manajemenakun" },
+];
+
+export default function SidebarTendik() {
+  const pathname = usePathname();
+  const router = useRouter();
+
+  const [nama, setNama] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null); 
+
+  useEffect(() => {
+     const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("nama, avatar_url") 
+        .eq("id", user.id)
+        .single();
+
+      if (data) {
+        if (data.nama) setNama(data.nama);
+        if (data.avatar_url) setAvatarUrl(data.avatar_url); 
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push("/login");
+  };
+
+  const isActive = (href: string) =>
+    pathname === href || pathname?.startsWith(`${href}/`)
+      ? "bg-blue-50 text-blue-700 font-semibold"
+      : "text-gray-400 hover:bg-gray-50";
+
+  return (
+  <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-30">
+      
+      <div className="p-6 pb-2">
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-10 h-10 rounded-full bg-[#2B5F9E] flex items-center justify-center text-white font-bold text-lg relative overflow-hidden shrink-0 shadow-inner">
+            {avatarUrl ? (
+              <Image 
+                src={avatarUrl} 
+                alt="Profile" 
+                layout="fill" 
+                objectFit="cover" 
+              />
+            ) : (
+              nama ? nama.charAt(0).toUpperCase() : "T"
+            )}
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-sm font-bold text-gray-900 truncate">
+              {nama || "Tendik"}
+            </h3>
+            <p className="text-xs text-blue-600 font-medium capitalize">
+              Tenaga Kependidikan
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-2">
+          MENU
+        </p>
+
+        {MENU_ITEMS.map((item) => (
+          <Link key={item.href} href={item.href} className="block mb-1">
+            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${isActive(item.href)}`}>
+              <item.icon size={18} />
+              <span>{item.label}</span>
+            </div>
+          </Link>
+        ))}
+
+        <div className="pt-8">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider px-2 mb-2">
+            OTHERS
+          </p>
+
+          <Link href="/settings" className="block mb-1">
+            <div className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${isActive("/settings")}`}>
+              <Settings size={18} />
+              <span>Settings</span>
+            </div>
+          </Link>
+        </div>
+      </nav>
+
+      <div className="p-6 mt-auto bg-white">
+        <button
+          onClick={handleLogout}
+          className="
+            w-full flex items-center gap-3 px-4 py-3
+            rounded-xl text-gray-500 font-medium
+            hover:bg-red-50 hover:text-red-600
+            transition-all group
+          "
+        >
+          <div
+            className="
+              w-9 h-9 flex items-center justify-center
+              rounded-lg border border-gray-200
+              text-gray-400
+              group-hover:border-red-200
+              group-hover:text-red-600
+              transition-all
+            "
+          >
+            <LogOut size={18} className="rotate-180" />
+          </div>
+
+          <span className="text-sm">Log out</span>
+        </button>
+
+        <p className="text-xs text-gray-400 mt-3 ml-12">V.1.0.0</p>
+      </div>
+    </aside>
+  );
+}
